@@ -1,8 +1,7 @@
 import * as Accordion from '@radix-ui/react-accordion'
-import { useDispatch } from 'react-redux'
 import { ChevronDown } from 'lucide-react'
 
-import { useAppSelector } from '../store'
+import { useAppDispatch, useAppSelector } from '../store'
 import { playerActions } from '../store/slices/player'
 
 import { Lesson } from './Lesson'
@@ -14,7 +13,7 @@ interface ModuleProps {
 }
 
 export function Module({ moduleIndex, title, amountOfLessons }: ModuleProps) {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const { activeModuleIndex, activeLessonIndex } = useAppSelector((state) => {
     const { activeModuleIndex, activeLessonIndex } = state.player

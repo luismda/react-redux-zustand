@@ -1,19 +1,20 @@
 import { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
-import { MessageCircle } from 'lucide-react'
+import { LucideLoader, MessageCircle } from 'lucide-react'
 import * as Accordion from '@radix-ui/react-accordion'
 
-import { useAppSelector } from '../store'
-import { useCurrentLesson, playerActions } from '../store/slices/player'
-
-import { api } from '../lib/axios'
+import { useAppDispatch, useAppSelector } from '../store'
+import {
+  useCurrentLesson,
+  loadCourse,
+  useCurrentLessonLoading,
+} from '../store/slices/player'
 
 import { Header } from '../components/Header'
 import { Video } from '../components/Video'
 import { Module } from '../components/Module'
 
 export function Player() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const modules = useAppSelector((state) => {
     return state.player.course?.modules
@@ -23,12 +24,12 @@ export function Player() {
     return state.player.activeModuleIndex
   })
 
+  const isCurrentLessonLoading = useCurrentLessonLoading()
+
   const { currentLesson } = useCurrentLesson()
 
   useEffect(() => {
-    api.get('/courses/1').then((response) => {
-      dispatch(playerActions.start(response.data))
-    })
+    dispatch(loadCourse())
   }, [])
 
   useEffect(() => {
@@ -54,24 +55,30 @@ export function Player() {
             <Video />
           </div>
           <aside className="absolute bottom-0 right-0 top-0 w-80 overflow-y-auto border-l border-zinc-800 bg-zinc-900 scrollbar-thin scrollbar-track-zinc-950 scrollbar-thumb-zinc-700">
-            <Accordion.Root
-              type="single"
-              defaultValue={`module-${currentModuleIndex}`}
-              collapsible
-              className="divide-y-2 divide-zinc-900"
-            >
-              {!!modules &&
-                modules.map((module, index) => {
-                  return (
-                    <Module
-                      key={module.id}
-                      moduleIndex={index}
-                      title={module.title}
-                      amountOfLessons={module.lessons.length}
-                    />
-                  )
-                })}
-            </Accordion.Root>
+            {isCurrentLessonLoading ? (
+              <div className="flex h-full items-center justify-center">
+                <LucideLoader className="h-6 w-6 animate-spin text-zinc-400" />
+              </div>
+            ) : (
+              <Accordion.Root
+                type="single"
+                defaultValue={`module-${currentModuleIndex}`}
+                collapsible
+                className="divide-y-2 divide-zinc-900"
+              >
+                {!!modules &&
+                  modules.map((module, index) => {
+                    return (
+                      <Module
+                        key={module.id}
+                        moduleIndex={index}
+                        title={module.title}
+                        amountOfLessons={module.lessons.length}
+                      />
+                    )
+                  })}
+              </Accordion.Root>
+            )}
           </aside>
         </main>
       </div>

@@ -26,6 +26,7 @@ const exampleState: PlayerState = {
   },
   activeModuleIndex: 0,
   activeLessonIndex: 0,
+  isLoading: false,
 }
 
 describe('player slice', () => {

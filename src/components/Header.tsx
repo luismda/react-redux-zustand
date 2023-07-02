@@ -1,10 +1,8 @@
-import {
-  useCurrentLesson,
-  useCurrentLessonLoading,
-} from '../store/slices/player'
+import { useCurrentLesson, useCurrentLessonLoading } from '../store/player'
 
 export function Header() {
   const { currentModule, currentLesson } = useCurrentLesson()
+
   const isCurrentLessonLoading = useCurrentLessonLoading()
 
   if (isCurrentLessonLoading) {

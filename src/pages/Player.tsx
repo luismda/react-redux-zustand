@@ -2,26 +2,25 @@ import { useEffect } from 'react'
 import { LucideLoader, MessageCircle } from 'lucide-react'
 import * as Accordion from '@radix-ui/react-accordion'
 
-import { useAppDispatch, useAppSelector } from '../store'
-import {
-  useCurrentLesson,
-  loadCourse,
-  useCurrentLessonLoading,
-} from '../store/slices/player'
-
 import { Header } from '../components/Header'
 import { Video } from '../components/Video'
 import { Module } from '../components/Module'
 
+import {
+  useCurrentLesson,
+  useCurrentLessonLoading,
+  usePlayerStore,
+} from '../store/player'
+
 export function Player() {
-  const dispatch = useAppDispatch()
+  const { modules, currentModuleIndex, load } = usePlayerStore((store) => {
+    const { course, activeModuleIndex, load } = store
 
-  const modules = useAppSelector((state) => {
-    return state.player.course?.modules
-  })
-
-  const currentModuleIndex = useAppSelector((state) => {
-    return state.player.activeModuleIndex
+    return {
+      modules: course?.modules,
+      currentModuleIndex: activeModuleIndex,
+      load,
+    }
   })
 
   const isCurrentLessonLoading = useCurrentLessonLoading()
@@ -29,7 +28,7 @@ export function Player() {
   const { currentLesson } = useCurrentLesson()
 
   useEffect(() => {
-    dispatch(loadCourse())
+    load()
   }, [])
 
   useEffect(() => {

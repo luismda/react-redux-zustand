@@ -1,10 +1,9 @@
 import * as Accordion from '@radix-ui/react-accordion'
 import { ChevronDown } from 'lucide-react'
 
-import { useAppDispatch, useAppSelector } from '../store'
-import { playerActions } from '../store/slices/player'
-
 import { Lesson } from './Lesson'
+
+import { usePlayerStore } from '../store/player'
 
 interface ModuleProps {
   moduleIndex: number
@@ -13,16 +12,16 @@ interface ModuleProps {
 }
 
 export function Module({ moduleIndex, title, amountOfLessons }: ModuleProps) {
-  const dispatch = useAppDispatch()
+  const { activeModuleIndex, activeLessonIndex, play } = usePlayerStore(
+    (store) => {
+      const { activeModuleIndex, activeLessonIndex, play } = store
 
-  const { activeModuleIndex, activeLessonIndex } = useAppSelector((state) => {
-    const { activeModuleIndex, activeLessonIndex } = state.player
+      return { activeModuleIndex, activeLessonIndex, play }
+    },
+  )
 
-    return { activeModuleIndex, activeLessonIndex }
-  })
-
-  const lessons = useAppSelector((state) => {
-    return state.player.course?.modules[moduleIndex].lessons
+  const lessons = usePlayerStore((store) => {
+    return store.course?.modules[moduleIndex].lessons
   })
 
   return (
@@ -56,9 +55,7 @@ export function Module({ moduleIndex, title, amountOfLessons }: ModuleProps) {
                   title={lesson.title}
                   duration={lesson.duration}
                   isCurrent={isCurrent}
-                  onPlay={() =>
-                    dispatch(playerActions.play([moduleIndex, lessonIndex]))
-                  }
+                  onPlay={() => play([moduleIndex, lessonIndex])}
                 />
               )
             })}
